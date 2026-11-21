@@ -27,7 +27,14 @@ npm run dev        # http://localhost:5173
 npm test           # unit + component tests (Vitest)
 npm run lint && npm run typecheck
 npm run build      # production PWA in dist/
+npx playwright install --with-deps chromium   # once, for the browser tests
+npm run test:bvt         # Playwright smoke tests (@bvt)
+npm run test:regression  # Playwright regression flows (@regression)
+npm run test:a11y        # axe-core accessibility checks
 ```
+
+PRs to `main` run `ci.yml`, `accessibility.yml` and `playwright.yml` (BVT, then regression); see
+[ADR-0012](docs/adr/0012-pr-quality-gates.md).
 
 ## Agent skills
 

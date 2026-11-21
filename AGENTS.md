@@ -25,6 +25,7 @@ Skills from [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills
 - `npm test` — unit tests (Vitest)
 - `npm run lint` / `npm run typecheck`
 - `npm run build` — production PWA build
+- `npm run test:bvt` / `npm run test:regression` / `npm run test:a11y` — Playwright (needs `npx playwright install --with-deps chromium`)
 
 ## Boundaries
 - Never add exercises that are not in `src/data/exercises.json`, and never add one with
