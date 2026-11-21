@@ -6,3 +6,4 @@ Process: [ADR-0001](0001-challenge-first-adr-process.md). Template: [template.md
 |-----|-------|--------|
 | [0001](0001-challenge-first-adr-process.md) | Challenge-first ADR process (POD model) | Accepted |
 | [0002](0002-adopt-agent-skills.md) | Adopt addyosmani/agent-skills | Accepted |
+| [0003](0003-platform-and-stack.md) | Platform and stack: offline-first PWA (Vite, React, TS, Tailwind) | Accepted |
