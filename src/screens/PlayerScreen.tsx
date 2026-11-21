@@ -126,6 +126,8 @@ export function PlayerScreen({ session, onFinish, onQuit }: Props) {
                 className="h-full w-full"
                 allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
                 referrerPolicy="strict-origin-when-cross-origin"
+                // No allow-top-navigation / allow-forms: the embed can play, but never redirect the app.
+                sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
               />
             </div>
             <button type="button" className={`${primary} mt-4 w-full`} onClick={leaveVideo}>
