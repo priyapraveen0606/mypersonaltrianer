@@ -41,7 +41,7 @@ test.describe('Security headers', { tag: '@bvt' }, () => {
     await videoToggle.click();
 
     const iframe = page.locator('iframe');
-    await expect(iframe).toHaveAttribute('src', new RegExp(`^${EMBED_ORIGIN}/embed/`));
+    expect(await iframe.getAttribute('src')).toMatch(/^https:\/\/www\.youtube-nocookie\.com\/embed\//);
     await expect(iframe).toHaveAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups');
     await expect(page.frameLocator('iframe').getByText('embed loaded')).toBeVisible();
 
