@@ -84,3 +84,4 @@ A mobile-first Progressive Web App (PWA) that acts as a voice-guided home fitnes
   "tempo": "2-1-2",
   "voiceIntro": "Lie on your back with the band above your knees. Feet flat, hip-width apart."
 }
+```
