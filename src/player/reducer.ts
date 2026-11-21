@@ -9,13 +9,15 @@ export interface PlayerState {
   muted: boolean;
   /** Increments whenever a new step starts or a cue should be re-spoken. */
   cueVersion: number;
+  /** Items whose work was skipped before it was done. */
+  skippedItems: number[];
 }
 
 export type PlayerAction =
   | { type: 'tick' }
   | { type: 'pause' }
   | { type: 'resume' }
-  | { type: 'skip' }
+  | { type: 'skip'; completed?: boolean }
   | { type: 'advance' }
   | { type: 'repeat' }
   | { type: 'toggleMute' };
@@ -27,6 +29,7 @@ export function initialPlayerState(timeline: readonly Step[]): PlayerState {
     status: timeline.length > 0 ? 'playing' : 'finished',
     muted: false,
     cueVersion: 0,
+    skippedItems: [],
   };
 }
 
@@ -52,10 +55,14 @@ export function playerReducer(timeline: readonly Step[]) {
       case 'advance':
         return goTo(state, timeline, state.stepIndex + 1);
       case 'skip': {
-        const current = timeline[state.stepIndex].itemIndex;
+        const { itemIndex: current, kind } = timeline[state.stepIndex];
+        const skippedItems =
+          action.completed || kind === 'rest' || state.skippedItems.includes(current)
+            ? state.skippedItems
+            : [...state.skippedItems, current];
         let next = state.stepIndex + 1;
         while (next < timeline.length && timeline[next].itemIndex === current) next++;
-        return goTo({ ...state, status: 'playing' }, timeline, next);
+        return goTo({ ...state, status: 'playing', skippedItems }, timeline, next);
       }
       case 'repeat':
         return { ...state, cueVersion: state.cueVersion + 1 };

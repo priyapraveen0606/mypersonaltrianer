@@ -10,7 +10,7 @@ import { MOOD_LABELS } from './labels';
 
 interface Props {
   session: WorkoutSession;
-  onFinish: () => void;
+  onFinish: (skippedItems: number[]) => void;
   onQuit: () => void;
 }
 
@@ -23,7 +23,7 @@ export function PlayerScreen({ session, onFinish, onQuit }: Props) {
   const timeline = useMemo(() => buildTimeline(session), [session]);
   const reducer = useMemo(() => playerReducer(timeline), [timeline]);
   const [state, dispatch] = useReducer(reducer, timeline, initialPlayerState);
-  const [videoMode, setVideoMode] = useState(false);
+  const [videoStep, setVideoStep] = useState<number | null>(null);
   const [online, setOnline] = useState(() => (typeof navigator === 'undefined' ? true : navigator.onLine));
   const { supported: wakeLockSupported } = useWakeLock(state.status === 'playing');
   const finishedRef = useRef(false);
@@ -31,6 +31,9 @@ export function PlayerScreen({ session, onFinish, onQuit }: Props) {
   const step = timeline[state.stepIndex];
   const item = step ? session.items[step.itemIndex] : undefined;
   const video = item ? parseWhitelistedVideo(item.exercise.videoUrl) : null;
+  // Video mode belongs to one step, so leaving that step (Skip, timer) always returns to voice.
+  const videoMode = videoStep === state.stepIndex && video !== null && step?.kind === 'work';
+  const setVideoMode = (on: boolean) => setVideoStep(on ? state.stepIndex : null);
   const ticking = state.status === 'playing' && !videoMode;
 
   useEffect(() => {
@@ -59,7 +62,7 @@ export function PlayerScreen({ session, onFinish, onQuit }: Props) {
   useEffect(() => {
     if (state.status !== 'playing' || state.muted || videoMode || !step) return;
     const cue = inStepCue(session, timeline, state.stepIndex, state.remainingSec);
-    if (cue) speak(cue);
+    if (cue) speak(cue.text, { dropIfBusy: cue.droppable });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.remainingSec]);
 
@@ -71,9 +74,9 @@ export function PlayerScreen({ session, onFinish, onQuit }: Props) {
     if (state.status === 'finished' && !finishedRef.current) {
       finishedRef.current = true;
       if (!state.muted) speak('Workout complete. Beautiful work.', { interrupt: true });
-      onFinish();
+      onFinish(state.skippedItems);
     }
-  }, [state.status, state.muted, onFinish]);
+  }, [state.status, state.muted, state.skippedItems, onFinish]);
 
   useEffect(() => () => stopSpeaking(), []);
 
@@ -81,7 +84,7 @@ export function PlayerScreen({ session, onFinish, onQuit }: Props) {
 
   const leaveVideo = () => {
     setVideoMode(false);
-    dispatch({ type: 'skip' });
+    dispatch({ type: 'skip', completed: true });
   };
 
   return (

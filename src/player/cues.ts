@@ -3,6 +3,12 @@ import type { Step } from './timeline';
 
 export const NEXT_UP_LEAD_SEC = 5;
 
+export interface Cue {
+  text: string;
+  /** Periodic cues are dropped rather than queued when speech is busy, so they never lag the timer. */
+  droppable: boolean;
+}
+
 function nextWorkItem(timeline: readonly Step[], stepIndex: number): number | null {
   const current = timeline[stepIndex].itemIndex;
   for (let i = stepIndex + 1; i < timeline.length; i++) {
@@ -54,16 +60,30 @@ export function inStepCue(
   timeline: readonly Step[],
   stepIndex: number,
   remainingSec: number,
+): Cue | null {
+  if (isNextUpSecond(timeline, stepIndex, remainingSec)) {
+    const next = nextWorkItem(timeline, stepIndex);
+    if (next !== null) return { text: `Next up: ${session.items[next].exercise.name}.`, droppable: false };
+  }
+  const text = periodicCue(session, timeline, stepIndex, remainingSec);
+  return text === null ? null : { text, droppable: true };
+}
+
+function isNextUpSecond(timeline: readonly Step[], stepIndex: number, remainingSec: number): boolean {
+  const step = timeline[stepIndex];
+  const isLastStepOfItem = timeline[stepIndex + 1]?.itemIndex !== step.itemIndex;
+  return isLastStepOfItem && remainingSec === NEXT_UP_LEAD_SEC && step.durationSec > NEXT_UP_LEAD_SEC;
+}
+
+function periodicCue(
+  session: WorkoutSession,
+  timeline: readonly Step[],
+  stepIndex: number,
+  remainingSec: number,
 ): string | null {
   const step = timeline[stepIndex];
   const elapsed = step.durationSec - remainingSec;
   if (elapsed === 0) return null;
-  const nextItem = nextWorkItem(timeline, stepIndex);
-  const isLastStepOfItem = timeline[stepIndex + 1]?.itemIndex !== step.itemIndex;
-
-  if (isLastStepOfItem && remainingSec === NEXT_UP_LEAD_SEC && nextItem !== null) {
-    return `Next up: ${session.items[nextItem].exercise.name}.`;
-  }
   if (step.kind !== 'work') return null;
   if (remainingSec <= 3) return String(remainingSec);
 

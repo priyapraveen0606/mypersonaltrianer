@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { afterglowStats } from './domain/afterglow';
 import { toLocalDate } from './domain/dates';
 import type { DurationMin, Mood, Rating } from './domain/types';
-import { generateWorkout, type WorkoutSession } from './engine/generateWorkout';
+import { dominantFocus, generateWorkout, type WorkoutSession } from './engine/generateWorkout';
 import { recentFocus } from './engine/memory';
 import { AfterglowScreen } from './screens/AfterglowScreen';
 import { HomeScreen } from './screens/HomeScreen';
@@ -29,7 +29,8 @@ export default function App() {
     setScreen({ name: 'player', session });
   };
 
-  const finish = useCallback((session: WorkoutSession) => {
+  const finish = useCallback((session: WorkoutSession, skippedItems: readonly number[]) => {
+    const done = session.items.filter((_, i) => !skippedItems.includes(i));
     const now = new Date();
     const completedAt = now.getTime();
     appendSession({
@@ -37,8 +38,8 @@ export default function App() {
       completedAt,
       mood: session.mood,
       durationMin: session.durationMin,
-      primaryFocus: session.primaryFocus,
-      exercisesCompleted: [...new Set(session.items.map((it) => it.exercise.id))],
+      primaryFocus: dominantFocus(done),
+      exercisesCompleted: [...new Set(done.map((it) => it.exercise.id))],
       rating: null,
     });
     setScreen({ name: 'pulse', completedAt });
@@ -53,7 +54,7 @@ export default function App() {
     case 'home':
       return <HomeScreen recentFocus={recentFocus(sessions, today)} stats={afterglowStats(sessions, today)} onStart={start} />;
     case 'player':
-      return <PlayerScreen session={screen.session} onFinish={() => finish(screen.session)} onQuit={() => setScreen({ name: 'home' })} />;
+      return <PlayerScreen session={screen.session} onFinish={(skipped) => finish(screen.session, skipped)} onQuit={() => setScreen({ name: 'home' })} />;
     case 'pulse':
       return <PulseCheckScreen onRate={(r) => rate(screen.completedAt, r)} />;
     case 'afterglow':

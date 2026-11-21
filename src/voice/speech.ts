@@ -10,10 +10,11 @@ function pickVoice(s: SpeechSynthesis): SpeechSynthesisVoice | undefined {
   return voices.find((v) => v.lang.startsWith('en') && v.localService) ?? voices.find((v) => v.lang.startsWith('en'));
 }
 
-/** Speaks `text`. `interrupt` cancels anything queued (used for step openings). */
-export function speak(text: string, { interrupt = false, rate = DEFAULT_RATE } = {}): void {
+/** Speaks `text`. `interrupt` cancels anything queued (step openings); `dropIfBusy` skips it if speech is busy. */
+export function speak(text: string, { interrupt = false, dropIfBusy = false, rate = DEFAULT_RATE } = {}): void {
   const s = synth();
   if (!s) return;
+  if (dropIfBusy && (s.speaking || s.pending)) return;
   if (interrupt) s.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.rate = rate;

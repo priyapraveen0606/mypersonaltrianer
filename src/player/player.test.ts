@@ -43,6 +43,15 @@ describe('player reducer (hands-free)', () => {
     expect(skipped.cueVersion).toBe(start.cueVersion + 1);
   });
 
+  it('records items skipped before their work was done, but not skips from rest or a finished video', () => {
+    let s = reduce(initialPlayerState(timeline), { type: 'skip' });
+    expect(s.skippedItems).toEqual([0]);
+    s = reduce(s, { type: 'skip', completed: true });
+    expect(s.skippedItems).toEqual([0]);
+    while (timeline[s.stepIndex].kind !== 'rest') s = reduce(s, { type: 'advance' });
+    expect(reduce(s, { type: 'skip' }).skippedItems).toEqual([0]);
+  });
+
   it('repeat bumps the cue version without moving', () => {
     const s: PlayerState = reduce(initialPlayerState(timeline), { type: 'repeat' });
     expect(s.stepIndex).toBe(0);
@@ -60,9 +69,9 @@ describe('voice cues', () => {
   it('cues the next move 5 seconds before it starts and counts down work', () => {
     const restIdx = timeline.findIndex((s) => s.kind === 'rest');
     const next = session.items[timeline[restIdx].itemIndex + 1].exercise.name;
-    expect(inStepCue(session, timeline, restIdx, 5)).toBe(`Next up: ${next}.`);
+    expect(inStepCue(session, timeline, restIdx, 5)).toEqual({ text: `Next up: ${next}.`, droppable: false });
     const workIdx = timeline.findIndex((s) => s.kind === 'work');
-    expect(inStepCue(session, timeline, workIdx, 3)).toBe('3');
+    expect(inStepCue(session, timeline, workIdx, 3)).toEqual({ text: '3', droppable: true });
   });
 
   it('counts tempo for slow-tempo strength moves', () => {
@@ -70,7 +79,7 @@ describe('voice cues', () => {
     const step = timeline[idx];
     const tempo = session.items[step.itemIndex].exercise.tempo.split('-').map(Number);
     const cycle = tempo[0] + tempo[1] + tempo[2];
-    expect(inStepCue(session, timeline, idx, step.durationSec - cycle)).toBe('Down');
-    expect(inStepCue(session, timeline, idx, step.durationSec - cycle - 1)).toBe(tempo[0] > 1 ? '2' : tempo[1] > 0 ? 'Hold' : 'Up');
+    expect(inStepCue(session, timeline, idx, step.durationSec - cycle)?.text).toBe('Down');
+    expect(inStepCue(session, timeline, idx, step.durationSec - cycle - 1)?.text).toBe(tempo[0] > 1 ? '2' : tempo[1] > 0 ? 'Hold' : 'Up');
   });
 });

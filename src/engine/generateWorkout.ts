@@ -178,7 +178,7 @@ function scaleToTarget(items: SessionItem[], targetSec: number): void {
   }
 }
 
-function dominantFocus(items: readonly SessionItem[]): PrimaryFocus {
+export function dominantFocus(items: readonly SessionItem[]): PrimaryFocus {
   const totals = new Map<PrimaryFocus, number>();
   for (const it of items) {
     if (it.exercise.primaryFocus === 'recovery') continue;
