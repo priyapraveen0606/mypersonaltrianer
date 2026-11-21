@@ -55,6 +55,7 @@ test.describe('BVT', { tag: '@bvt' }, () => {
   test('touch targets are at least 48x48 px on Home and Player', async ({ page }) => {
     await openHome(page);
     await expectTouchTargets(page);
+    await expect.poll(() => page.locator('[role="radio"]').count()).toBe(9);
     await startWorkout(page, 'Strong & Focused');
     await expectTouchTargets(page);
     await page.getByRole('button', { name: 'Pause' }).click();

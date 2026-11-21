@@ -100,9 +100,10 @@ export async function skipToEnd(page: Page, maxSkips = 60): Promise<void> {
   await expect(pulse).toBeVisible();
 }
 
-/** Asserts every visible button meets the 48x48 px touch-target minimum (CONSTRAINTS §3). */
+/** Asserts every visible tappable control meets the 48x48 px touch-target minimum (CONSTRAINTS §3). */
 export async function expectTouchTargets(page: Page, min = 48): Promise<void> {
-  const buttons = page.getByRole('button');
+  // CSS, not getByRole('button'): mood/time/guide choices are <button role="radio">.
+  const buttons = page.locator('button, [role="button"], [role="radio"], a[href], input, select');
   const count = await buttons.count();
   expect(count).toBeGreaterThan(0);
   for (let i = 0; i < count; i++) {
