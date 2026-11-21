@@ -25,6 +25,7 @@
     "position": "standing-flow",
     "itBandSafe": true,
     "requiresFormCheck": false,
+    "videoUrl": "https://www.youtube.com/watch?v=oROcJnaw0NU",
     "formCue": "Open your chest during side bends; keep movements slow and cooling.",
     "defaultDurationSec": 80,
     "defaultRestSec": 10,

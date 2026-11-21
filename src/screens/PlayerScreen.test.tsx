@@ -1,0 +1,51 @@
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { EXERCISES } from '../domain/exercises';
+import type { WorkoutSession } from '../engine/generateWorkout';
+import { PlayerScreen } from './PlayerScreen';
+
+const byId = (id: string) => EXERCISES.find((e) => e.id === id)!;
+const plain = EXERCISES.find((e) => !e.videoUrl && !e.requiresFormCheck)!;
+const session: WorkoutSession = {
+  mood: 'moody', durationMin: 10, targetSec: 600, totalSec: 100, primaryFocus: 'full-body-flow',
+  items: [
+    { exercise: byId('chandra-namaskar'), round: 1, formCheckSec: 0, workSec: 40, restSec: 10 },
+    { exercise: plain, round: 1, formCheckSec: 0, workSec: 50, restSec: 0 },
+  ],
+};
+
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.stubGlobal('SpeechSynthesisUtterance', class { rate = 1; constructor(public text: string) {} });
+  vi.stubGlobal('speechSynthesis', { speak: () => {}, cancel: () => {}, getVoices: () => [] });
+});
+afterEach(() => {
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
+});
+
+const tick = (n: number) => {
+  for (let i = 0; i < n; i++) act(() => void vi.advanceTimersByTime(1000));
+};
+
+describe('PlayerScreen video mode', () => {
+  it('returns to voice and keeps the timer running when Skip is pressed during a video', () => {
+    render(<PlayerScreen session={session} onFinish={() => {}} onQuit={() => {}} />);
+    fireEvent.click(screen.getByRole('radio', { name: 'Play My Video' }));
+    expect(screen.getByTitle(/video/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Skip' }));
+    expect(screen.queryByTitle(/video/)).not.toBeInTheDocument();
+    expect(screen.getByText('0:50')).toBeInTheDocument();
+    tick(2);
+    expect(screen.getByText('0:48')).toBeInTheDocument();
+  });
+
+  it('reports skipped moves on finish, but not a move finished via its video', () => {
+    const onFinish = vi.fn();
+    render(<PlayerScreen session={session} onFinish={onFinish} onQuit={() => {}} />);
+    fireEvent.click(screen.getByRole('radio', { name: 'Play My Video' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Done with video' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Skip' }));
+    expect(onFinish).toHaveBeenCalledWith([1]);
+  });
+});

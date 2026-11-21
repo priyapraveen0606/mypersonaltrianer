@@ -44,7 +44,7 @@ A mobile-first Progressive Web App (PWA) that acts as a voice-guided home fitnes
 ## 4. Functional Requirements
 
 ### 4.1 Smart Workout Engine
-* **Hard Safety Filter:** Exclude any exercise tagged `position: "side-lying"` or `itBandRisk: true`.
+* **Hard Safety Filter:** Exclude any exercise tagged `position: "side-lying"` or `itBandSafe: false` (canonical field, see [ADR-0004](../adr/0004-exercise-data-model.md)).
 * **Auto-Balance Rule:** If an exercise with `equipment: "thigh-trainer"` is selected, the engine *must* insert a paired exercise with `equipment: "resistance-band"` and `targetMuscle: "glute-medius"` in the same session.
 * **Yesterday's Memory:** Read the most recent completed session from local storage.
   * If yesterday's primary focus was `lower-body`, today's session prioritizes `upper-body`, `back`, or `cardio` (unless the user picks `Moody` or `Meditative` flow).
@@ -57,6 +57,8 @@ A mobile-first Progressive Web App (PWA) that acts as a voice-guided home fitnes
 * **Wake Lock:** Automatically request `navigator.wakeLock.request('screen')` during active workouts so the phone never sleeps mid-set.
 
 ### 4.3 1-Year Progressive Overload Engine (3-Strike Rule)
+> **V2 — deferred by [ADR-0011](../adr/0011-v1-scope-boundaries.md).** V1 stores the per-session rating only ([ADR-0010](../adr/0010-pulse-check-and-afterglow.md)).
+
 * Track the user's post-workout rating (`Easy` | `Just Right` | `Too Hard`) per exercise/category.
 * **Progression Trigger:** When an exercise or category is rated `Easy` **3 consecutive times**, automatically promote it to the next tier:
   1. **Tier 1 (Tempo):** Slow down movement speed (increase Time Under Tension).
@@ -84,3 +86,4 @@ A mobile-first Progressive Web App (PWA) that acts as a voice-guided home fitnes
   "tempo": "2-1-2",
   "voiceIntro": "Lie on your back with the band above your knees. Feet flat, hip-width apart."
 }
+```
