@@ -20,9 +20,9 @@ were not found" and cannot say whether the PR adds alerts.
 |----------|------------|
 | **Necessity** — Is this needed for V1? | Yes. Wide sharing invites scanners and forks. A CSP is the last line of defence against injected script; a sandbox stops an embed from navigating the app; `SECURITY.md` gives a private reporting path; a licence is a precondition for reuse. |
 | **Scope** — Smallest version? | Build-time CSP `<meta>`, a referrer `<meta>`, `sandbox` on the one iframe, `SECURITY.md`, MIT `LICENSE`. Out: HTTP response headers (`frame-ancestors`, HSTS), because there is no hosting yet; they belong with a future deployment ADR. |
-| **Dependencies** — What do we add? | No new packages. `.github/workflows/codeql.yml` uses `github/codeql-action` v4 (GitHub-maintained). A small inline Vite plugin (`apply: 'build'`) injects the policy because the dev server's React Refresh inline script would violate it. Depends on ADR-0009's single embed origin. |
+| **Dependencies** — What do we add? | No new packages. `.github/workflows/codeql.yml` is GitHub's generated advanced-setup workflow (added to `main` in PR #17) and uses `github/codeql-action` v4 (GitHub-maintained). A small inline Vite plugin (`apply: 'build'`) injects the policy because the dev server's React Refresh inline script would violate it. Depends on ADR-0009's single embed origin. |
 | **Data model** — Data touched? | None. |
-| **Security & privacy** — Risks? | The policy allows only `'self'` plus `https://www.youtube-nocookie.com` for frames and `data:` images. `connect-src 'self'` means a future network feature must update this ADR's policy deliberately. `sandbox` keeps `allow-scripts allow-same-origin` (required by the YouTube player; safe because the origin is cross-origin) but drops top-navigation and forms. The CodeQL job gets `security-events: write` only, scoped to that job. |
+| **Security & privacy** — Risks? | The policy allows only `'self'` plus `https://www.youtube-nocookie.com` for frames and `data:` images. `connect-src 'self'` means a future network feature must update this ADR's policy deliberately. `sandbox` keeps `allow-scripts allow-same-origin` (required by the YouTube player; safe because the origin is cross-origin) but drops top-navigation and forms. CodeQL permissions (`security-events: write`, `packages: read`, `actions: read`, `contents: read`) are scoped to its `analyze` job. |
 | **Alternatives** — Others? | See below. |
 
 ## Decision
@@ -32,9 +32,9 @@ were not found" and cannot say whether the PR adds alerts.
   object-src 'none'; base-uri 'self'; form-action 'none'`.
 - `index.html` sets `<meta name="referrer" content="strict-origin-when-cross-origin">`.
 - The video iframe gets `sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"`.
-- `.github/workflows/codeql.yml` (advanced setup) analyses `actions` and `javascript-typescript` with
-  `build-mode: none` on pushes to `main`, every PR to `main` (including Dependabot's) and weekly, using the
-  same `/language:<lang>` categories as default setup.
+- CodeQL default setup is disabled in favour of advanced setup: `.github/workflows/codeql.yml` analyses
+  `actions` and `javascript-typescript` with `build-mode: none` on pushes to `main`, every PR to `main`
+  (including Dependabot's) and weekly, using the same `/language:<lang>` categories as default setup.
 - `SECURITY.md` asks for private reports via GitHub's "Report a vulnerability" form; `LICENSE` is MIT
   and `package.json` declares `"license": "MIT"`.
 
@@ -43,8 +43,8 @@ were not found" and cannot say whether the PR adds alerts.
   (policy present in the production build; a full Moody workout plus video mode raises zero
   `securitypolicyviolation` events).
 - Any new origin, inline script or inline style must change the policy in a new ADR.
-- GitHub rejects advanced-setup uploads while default setup is on: an admin must switch CodeQL to
-  advanced setup (Settings → Advanced Security → CodeQL analysis) before `codeql.yml` can upload.
+- GitHub rejects advanced-setup uploads while default setup is on, so default setup must stay disabled
+  (Settings → Advanced Security → CodeQL analysis).
 - Repo-admin follow-ups (not code): enable private vulnerability reporting, secret scanning with push
   protection, Dependabot alerts, and branch protection on `main`.
 - When the app is hosted, send the same policy as an HTTP header and add `frame-ancestors 'none'`.
