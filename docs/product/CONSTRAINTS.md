@@ -16,7 +16,7 @@ These rules are **non-negotiable**. Any generated code, UI, or workout logic tha
 * **Voice-First, Hands-Free Execution:** Once a session starts, the user MUST be able to complete the entire workout without looking at or touching the phone. All transitions, rep counts, tempo cues, and rest timers MUST be spoken via TTS.
 * **Voice-First with Whitelisted Video Mode:** _(supersedes "No Long Videos" — see [ADR-0009](../adr/0009-whitelisted-video-mode.md))_ Do NOT pull random or unvetted YouTube videos. However, if an exercise in `exercises.json` includes a user-whitelisted `videoUrl` (such as `chandra-namaskar`), display a simple toggle button on the player: **"Voice Guide" (default) | "Play My Video"**, which embeds that specific YouTube link cleanly. Other visuals are limited to a 5-second form-check card (max 2 short posture cues) shown *only* before exercises where `requiresFormCheck: true`.
 * **No Diet/Calorie Culture:** NEVER display calorie burn estimates, weight-loss countdowns, or guilt-inducing "missed day" warnings. Track only consistency streaks, total sessions, and the "Afterglow" completion state.
-* **Moody ≠ Beginner:** Never treat the `Moody` state as low-stamina. `Moody` MUST generate auto-pilot, zero-thinking flows (e.g., scaled *Surya/Chandra Namaskar* up to 13+ rounds) rather than overly basic 2-minute stretches.
+* **Moody ≠ Beginner:** Never treat the `Moody` state as low-stamina. `Moody` MUST generate auto-pilot, zero-thinking flows (e.g., scaled bodyweight conditioning or *Surya/Chandra Namaskar*) rather than overly basic 2-minute stretches.
 
 ---
 

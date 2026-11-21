@@ -6,12 +6,12 @@ A mobile-first Progressive Web App (PWA) that acts as a voice-guided home fitnes
 ---
 
 ## 2. Target User & Equipment Profile
-* **Primary Goal:** Sustainable 1-year body recomposition (reduce thigh/glute volume slightly while preserving structure, strengthen the back, eliminate sitting discomfort, and maximize the post-workout "afterglow").
-* **Baseline Stamina:** High endurance (capable of up to 13 rounds of *Surya Namaskar* even on low-mental-bandwidth days).
+* **Primary Goal:** Sustainable 1-year body recomposition focused on balanced lower-body toning, posterior chain/back strength, improved posture and mobility, and consistent post-workout energy.
+* **Baseline Stamina:** High endurance, capable of sustaining high-repetition bodyweight conditioning even on low-energy days.
 * **Physical Constraints (Hard Rules):**
   * **IT Band Safe:** Zero side-lying exercises (no side-lying clamshells, side leg lifts, or lateral hip compression).
   * **Hip Balance:** Any session using the inner-thigh trainer must automatically pair it with an outer-glute resistance band exercise (standing or supine/on-the-back).
-* **Available Equipment:**
+* **Required Equipment:**
   * Bodyweight / Yoga Mat
   * 1 kg Dumbbells (scalable to 2 kg / 3 kg over 12 months)
   * Thigh Resistance Bands
