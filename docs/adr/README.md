@@ -15,3 +15,4 @@ Process: [ADR-0001](0001-challenge-first-adr-process.md). Template: [template.md
 | [0009](0009-whitelisted-video-mode.md) | Whitelisted video mode (supersedes "No Long Videos") | Accepted |
 | [0010](0010-pulse-check-and-afterglow.md) | Pulse check and Afterglow tracker | Accepted |
 | [0011](0011-v1-scope-boundaries.md) | V1 scope boundaries (V2 deferrals) | Accepted |
+| [0012](0012-pr-quality-gates.md) | PR quality gates: Dependabot, accessibility, Playwright BVT + regression | Accepted |

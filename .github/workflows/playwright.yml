@@ -1,0 +1,54 @@
+name: Playwright
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: playwright-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  playwright-bvt:
+    name: playwright-bvt
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:bvt
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report-bvt
+          path: playwright-report/
+          retention-days: 14
+
+  playwright-regression:
+    name: playwright-regression
+    needs: playwright-bvt
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:regression
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report-regression
+          path: playwright-report/
+          retention-days: 14
