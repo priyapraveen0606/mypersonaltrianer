@@ -33,7 +33,7 @@ npm run test:regression  # Playwright regression flows (@regression)
 npm run test:a11y        # axe-core accessibility checks
 ```
 
-PRs to `main` run `ci.yml`, `accessibility.yml` and `playwright.yml` (BVT, then regression); see
+PRs to `main` run `ci.yml`, `accessibility.yml`, `playwright.yml` (BVT, then regression) and `codeql.yml`; see
 [ADR-0012](docs/adr/0012-pr-quality-gates.md).
 
 ## Agent skills
@@ -41,3 +41,9 @@ PRs to `main` run `ci.yml`, `accessibility.yml` and `playwright.yml` (BVT, then 
 [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) is a submodule at
 `.skills/agent-skills`, registered per its README with `npx skills add ./.skills/agent-skills -s '*' -a devin --copy`
 (see [ADR-0002](docs/adr/0002-adopt-agent-skills.md) and [AGENTS.md](AGENTS.md)).
+
+## Security & licence
+
+Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md). The production build ships a
+strict Content-Security-Policy and sandboxes the YouTube embed ([ADR-0013](docs/adr/0013-security-hardening-for-public-release.md)).
+Released under the [MIT License](LICENSE).

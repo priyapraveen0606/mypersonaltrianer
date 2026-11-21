@@ -29,6 +29,16 @@ const tick = (n: number) => {
 };
 
 describe('PlayerScreen video mode', () => {
+  it('sandboxes the YouTube embed so it cannot navigate the app or open forms', () => {
+    render(<PlayerScreen session={session} onFinish={() => {}} onQuit={() => {}} />);
+    fireEvent.click(screen.getByRole('radio', { name: 'Play My Video' }));
+    const frame = screen.getByTitle(/video/);
+    expect(frame.getAttribute('sandbox')?.split(' ').sort()).toEqual(
+      ['allow-popups', 'allow-presentation', 'allow-same-origin', 'allow-scripts'],
+    );
+    expect(frame).toHaveAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+  });
+
   it('returns to voice and keeps the timer running when Skip is pressed during a video', () => {
     render(<PlayerScreen session={session} onFinish={() => {}} onQuit={() => {}} />);
     fireEvent.click(screen.getByRole('radio', { name: 'Play My Video' }));
