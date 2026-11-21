@@ -9,3 +9,4 @@ Process: [ADR-0001](0001-challenge-first-adr-process.md). Template: [template.md
 | [0003](0003-platform-and-stack.md) | Platform and stack: offline-first PWA (Vite, React, TS, Tailwind) | Accepted |
 | [0004](0004-exercise-data-model.md) | Exercise data model and vetted library | Accepted |
 | [0005](0005-local-only-persistence.md) | Local-only persistence of the session log | Accepted |
+| [0006](0006-smart-workout-engine.md) | Smart Workout Engine | Accepted |
