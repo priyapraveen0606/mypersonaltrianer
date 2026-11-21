@@ -14,8 +14,12 @@ interface Props {
   onQuit: () => void;
 }
 
-const control =
-  'min-h-16 min-w-16 flex-1 rounded-2xl bg-slate-800 px-3 text-xl font-bold active:bg-slate-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-sky-400';
+const controlBase =
+  'min-h-16 min-w-16 flex-1 rounded-2xl px-3 text-xl font-bold focus:outline-none focus-visible:ring-4 focus-visible:ring-sky-400';
+// Exactly one colour set per button: combining Tailwind bg/text utilities lets CSS order pick the winner.
+const control = `${controlBase} bg-slate-800 text-slate-50 active:bg-slate-700`;
+const primary = `${controlBase} bg-emerald-400 text-slate-900 active:bg-emerald-300`;
+const selected = `${controlBase} bg-amber-400 text-slate-900`;
 
 const fmt = (sec: number) => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
 
@@ -103,7 +107,7 @@ export function PlayerScreen({ session, onFinish, onQuit }: Props) {
         {step.kind === 'form-check' && (
           <div className="w-full rounded-2xl bg-slate-800 p-5 text-2xl leading-snug">
             <p>{item.exercise.formCue}</p>
-            <button type="button" className={`${control} mt-4 w-full bg-emerald-400 text-slate-900`} onClick={() => dispatch({ type: 'advance' })}>
+            <button type="button" className={`${primary} mt-4 w-full`} onClick={() => dispatch({ type: 'advance' })}>
               Got it, start
             </button>
           </div>
@@ -124,7 +128,7 @@ export function PlayerScreen({ session, onFinish, onQuit }: Props) {
                 referrerPolicy="strict-origin-when-cross-origin"
               />
             </div>
-            <button type="button" className={`${control} mt-4 w-full bg-emerald-400 text-slate-900`} onClick={leaveVideo}>
+            <button type="button" className={`${primary} mt-4 w-full`} onClick={leaveVideo}>
               Done with video
             </button>
           </div>
@@ -136,7 +140,7 @@ export function PlayerScreen({ session, onFinish, onQuit }: Props) {
 
         {video && step.kind === 'work' && (
           <div role="radiogroup" aria-label="Guide" className="flex w-full gap-2">
-            <button type="button" role="radio" aria-checked={!videoMode} className={`${control} ${!videoMode ? 'bg-amber-400 text-slate-900' : ''}`} onClick={() => setVideoMode(false)}>
+            <button type="button" role="radio" aria-checked={!videoMode} className={!videoMode ? selected : control} onClick={() => setVideoMode(false)}>
               Voice Guide
             </button>
             <button
@@ -144,7 +148,7 @@ export function PlayerScreen({ session, onFinish, onQuit }: Props) {
               role="radio"
               aria-checked={videoMode}
               disabled={!online}
-              className={`${control} ${videoMode ? 'bg-amber-400 text-slate-900' : ''} disabled:opacity-50`}
+              className={`${videoMode ? selected : control} disabled:opacity-50`}
               onClick={() => setVideoMode(true)}
             >
               {online ? 'Play My Video' : 'Video needs internet'}
@@ -164,7 +168,7 @@ export function PlayerScreen({ session, onFinish, onQuit }: Props) {
         {state.status === 'playing' ? (
           <button type="button" className={control} onClick={() => dispatch({ type: 'pause' })}>Pause</button>
         ) : (
-          <button type="button" className={`${control} bg-emerald-400 text-slate-900`} onClick={() => dispatch({ type: 'resume' })}>Play</button>
+          <button type="button" className={primary} onClick={() => dispatch({ type: 'resume' })}>Play</button>
         )}
         <button type="button" className={control} onClick={() => dispatch({ type: 'skip' })}>Skip</button>
         <button type="button" className={control} onClick={() => dispatch({ type: 'repeat' })}>Repeat</button>
@@ -173,7 +177,7 @@ export function PlayerScreen({ session, onFinish, onQuit }: Props) {
         </button>
       </nav>
       {state.status === 'paused' && (
-        <button type="button" className={`${control} w-full flex-none bg-transparent text-slate-300 underline`} onClick={onQuit}>
+        <button type="button" className={`${controlBase} w-full flex-none bg-transparent text-slate-300 underline`} onClick={onQuit}>
           End workout (not saved)
         </button>
       )}
