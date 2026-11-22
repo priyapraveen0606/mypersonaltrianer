@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { generateWorkout } from '../engine/generateWorkout';
+import { EXERCISES } from '../domain/exercises';
+import { generateWorkout, type WorkoutSession } from '../engine/generateWorkout';
 import { seededRng } from '../engine/random';
 import { inStepCue, openingCue } from './cues';
 import { initialPlayerState, playerReducer, type PlayerState } from './reducer';
@@ -36,6 +37,18 @@ describe('player reducer (hands-free)', () => {
     expect(reduce(paused, { type: 'tick' })).toEqual(paused);
   });
 
+  it('marks a rest complete only when its timer expires naturally', () => {
+    const restTimeline = [
+      { kind: 'rest' as const, itemIndex: 0, durationSec: 1 },
+      { kind: 'work' as const, itemIndex: 1, durationSec: 10 },
+    ];
+    const restReducer = playerReducer(restTimeline);
+    const start = initialPlayerState(restTimeline);
+
+    expect(restReducer(start, { type: 'tick' }).restCompletionVersion).toBe(1);
+    expect(restReducer(start, { type: 'skip' }).restCompletionVersion).toBe(0);
+  });
+
   it('skip jumps to the next move, past its rest', () => {
     const start = initialPlayerState(timeline);
     const skipped = reduce(start, { type: 'skip' });
@@ -64,6 +77,26 @@ describe('voice cues', () => {
     const workIdx = timeline.findIndex((s) => s.kind === 'work');
     const item = session.items[timeline[workIdx].itemIndex];
     expect(openingCue(session, timeline, workIdx)).toContain(item.exercise.voiceIntro);
+  });
+
+  it('speaks each Chandra pose cue proportionally through its work duration', () => {
+    const chandra = EXERCISES.find((exercise) => exercise.id === 'chandra-namaskar')!;
+    const chandraSession: WorkoutSession = {
+      ...session,
+      items: [{ ...session.items[0], exercise: chandra, workSec: 80 }],
+    };
+    const chandraTimeline = buildTimeline(chandraSession);
+    const chandraWorkIndex = chandraTimeline.findIndex((step) => step.kind === 'work');
+    const steps = chandraSession.items[0].exercise.voiceSteps!;
+
+    expect(openingCue(chandraSession, chandraTimeline, chandraWorkIndex)).toContain('Standing start.');
+    steps.forEach((text, index) => {
+      const cueElapsed = Math.round(((index + 1) * (80 - 10)) / steps.length);
+      expect(inStepCue(chandraSession, chandraTimeline, chandraWorkIndex, 80 - cueElapsed)).toEqual({
+        text,
+        droppable: false,
+      });
+    });
   });
 
   it('cues the next move 5 seconds before it starts and counts down work', () => {

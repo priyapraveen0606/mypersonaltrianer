@@ -10,6 +10,7 @@ import { PlayerScreen } from './screens/PlayerScreen';
 import { PulseCheckScreen } from './screens/PulseCheckScreen';
 import { appendSession, loadSessions, rateSession } from './storage/sessionLog';
 import { speak } from './voice/speech';
+import { unlockRestEndSound } from './voice/sound';
 
 type Screen =
   | { name: 'home' }
@@ -26,6 +27,7 @@ export default function App() {
     const session = generateWorkout({ mood, durationMin, recentFocus: recentFocus(sessions, today) });
     // Speaking inside the tap handler unlocks speech synthesis on iOS Safari.
     speak("Let's begin.", { interrupt: true });
+    unlockRestEndSound();
     setScreen({ name: 'player', session });
   };
 

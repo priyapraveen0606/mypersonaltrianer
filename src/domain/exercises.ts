@@ -35,6 +35,12 @@ export function validateExercise(entry: unknown): string[] {
   if (typeof e.requiresFormCheck !== 'boolean') errors.push('requiresFormCheck must be boolean');
   if (!isIntInRange(e.defaultDurationSec, MIN_EXERCISE_SEC, MAX_EXERCISE_SEC)) errors.push('defaultDurationSec out of range');
   if (!isIntInRange(e.defaultRestSec, 0, 120)) errors.push('defaultRestSec out of range');
+  if (
+    e.voiceSteps !== undefined &&
+    (!Array.isArray(e.voiceSteps) || e.voiceSteps.length === 0 || !e.voiceSteps.every(isNonEmptyString))
+  ) {
+    errors.push('voiceSteps must be a non-empty list of non-empty strings');
+  }
   if (e.videoUrl !== undefined && parseWhitelistedVideo(e.videoUrl) === null) {
     errors.push('videoUrl must be a YouTube watch/youtu.be URL');
   }

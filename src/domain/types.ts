@@ -42,6 +42,7 @@ export interface Exercise {
   defaultRestSec: number;
   tempo: string;
   voiceIntro: string;
+  voiceSteps?: string[];
   videoUrl?: string;
 }
 

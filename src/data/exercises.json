@@ -30,7 +30,23 @@
     "defaultDurationSec": 80,
     "defaultRestSec": 10,
     "tempo": "flow",
-    "voiceIntro": "Stand tall on your mat. Take a deep breath in and begin your slow, cooling Chandra Namaskar flow."
+    "voiceIntro": "Standing start. Stand at the side of your mat. Inhale and reach both arms overhead.",
+    "voiceSteps": [
+      "Exhale and bend to one side. Inhale to center; exhale to the other side, then inhale to center.",
+      "Exhale, step wide into Goddess Pose, bend your knees and sink your hips.",
+      "Inhale and straighten your arms and legs into Star Pose.",
+      "Exhale and reach into Triangle Pose.",
+      "Inhale and fold over your front leg into Pyramid Pose.",
+      "Exhale, lower into Low Lunge. Inhale and reach your arms overhead.",
+      "Exhale and open into Skandasana.",
+      "Inhale and shift across into Skandasana on the opposite leg.",
+      "Turn to face the other direction and rise into Low Lunge. Exhale and place your hands on the mat.",
+      "Inhale, lift and fold into Pyramid Pose.",
+      "Exhale and open into Triangle Pose.",
+      "Inhale and rise to standing, arms and legs straight.",
+      "Exhale and sink back into Goddess Pose.",
+      "Step your feet together, reach your arms overhead, then bring your hands to prayer at heart center."
+    ]
   },
   {
     "id": "banded-glute-bridge",

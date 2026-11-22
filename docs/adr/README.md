@@ -17,3 +17,4 @@ Process: [ADR-0001](0001-challenge-first-adr-process.md). Template: [template.md
 | [0011](0011-v1-scope-boundaries.md) | V1 scope boundaries (V2 deferrals) | Accepted |
 | [0012](0012-pr-quality-gates.md) | PR quality gates: Dependabot, accessibility, Playwright BVT + regression | Accepted |
 | [0013](0013-security-hardening-for-public-release.md) | Security hardening for the public release: CSP, iframe sandbox, CodeQL advanced setup, SECURITY.md, MIT licence | Accepted |
+| [0014](0014-rest-end-chime-and-guided-chandra-namaskar.md) | Rest-end chime and guided Chandra Namaskar | Accepted |

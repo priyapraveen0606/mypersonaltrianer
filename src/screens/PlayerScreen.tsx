@@ -6,6 +6,7 @@ import { inStepCue, openingCue } from '../player/cues';
 import { initialPlayerState, playerReducer } from '../player/reducer';
 import { buildTimeline } from '../player/timeline';
 import { isSpeechSupported, speak, stopSpeaking } from '../voice/speech';
+import { playRestEndSound } from '../voice/sound';
 import { MOOD_LABELS } from './labels';
 
 interface Props {
@@ -73,6 +74,14 @@ export function PlayerScreen({ session, onFinish, onQuit }: Props) {
   useEffect(() => {
     if (state.status === 'paused' || state.muted || videoMode) stopSpeaking();
   }, [state.status, state.muted, videoMode]);
+
+  const restCompletionVersion = useRef(state.restCompletionVersion);
+  useEffect(() => {
+    if (state.restCompletionVersion !== restCompletionVersion.current && !state.muted) {
+      playRestEndSound();
+    }
+    restCompletionVersion.current = state.restCompletionVersion;
+  }, [state.restCompletionVersion, state.muted]);
 
   useEffect(() => {
     if (state.status === 'finished' && !finishedRef.current) {

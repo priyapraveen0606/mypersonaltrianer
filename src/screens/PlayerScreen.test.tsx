@@ -4,6 +4,9 @@ import { EXERCISES } from '../domain/exercises';
 import type { WorkoutSession } from '../engine/generateWorkout';
 import { PlayerScreen } from './PlayerScreen';
 
+const { playRestEndSound } = vi.hoisted(() => ({ playRestEndSound: vi.fn() }));
+vi.mock('../voice/sound', () => ({ playRestEndSound, unlockRestEndSound: vi.fn() }));
+
 const byId = (id: string) => EXERCISES.find((e) => e.id === id)!;
 const plain = EXERCISES.find((e) => !e.videoUrl && !e.requiresFormCheck)!;
 const session: WorkoutSession = {
@@ -15,6 +18,7 @@ const session: WorkoutSession = {
 };
 
 beforeEach(() => {
+  vi.clearAllMocks();
   vi.useFakeTimers();
   vi.stubGlobal('SpeechSynthesisUtterance', class { rate = 1; constructor(public text: string) {} });
   vi.stubGlobal('speechSynthesis', { speak: () => {}, cancel: () => {}, getVoices: () => [] });
@@ -57,5 +61,28 @@ describe('PlayerScreen video mode', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Done with video' }));
     fireEvent.click(screen.getByRole('button', { name: 'Skip' }));
     expect(onFinish).toHaveBeenCalledWith([1]);
+  });
+});
+
+describe('PlayerScreen rest sound', () => {
+  it('plays a chime when a rest timer finishes naturally', () => {
+    render(<PlayerScreen session={session} onFinish={() => {}} onQuit={() => {}} />);
+    tick(40);
+    tick(10);
+    expect(playRestEndSound).toHaveBeenCalledOnce();
+  });
+
+  it('does not chime when the user skips a rest or has muted audio', () => {
+    const { unmount } = render(<PlayerScreen session={session} onFinish={() => {}} onQuit={() => {}} />);
+    tick(40);
+    fireEvent.click(screen.getByRole('button', { name: 'Skip' }));
+    expect(playRestEndSound).not.toHaveBeenCalled();
+    unmount();
+
+    render(<PlayerScreen session={session} onFinish={() => {}} onQuit={() => {}} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Mute' }));
+    tick(40);
+    tick(10);
+    expect(playRestEndSound).not.toHaveBeenCalled();
   });
 });

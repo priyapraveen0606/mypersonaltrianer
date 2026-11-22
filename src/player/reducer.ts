@@ -9,6 +9,8 @@ export interface PlayerState {
   muted: boolean;
   /** Increments whenever a new step starts or a cue should be re-spoken. */
   cueVersion: number;
+  /** Increments only when a rest ends through normal timer progression. */
+  restCompletionVersion: number;
   /** Items whose work was skipped before it was done. */
   skippedItems: number[];
 }
@@ -29,6 +31,7 @@ export function initialPlayerState(timeline: readonly Step[]): PlayerState {
     status: timeline.length > 0 ? 'playing' : 'finished',
     muted: false,
     cueVersion: 0,
+    restCompletionVersion: 0,
     skippedItems: [],
   };
 }
@@ -47,7 +50,13 @@ export function playerReducer(timeline: readonly Step[]) {
       case 'tick':
         if (state.status !== 'playing') return state;
         if (state.remainingSec > 1) return { ...state, remainingSec: state.remainingSec - 1 };
-        return goTo(state, timeline, state.stepIndex + 1);
+        return goTo(
+          timeline[state.stepIndex].kind === 'rest'
+            ? { ...state, restCompletionVersion: state.restCompletionVersion + 1 }
+            : state,
+          timeline,
+          state.stepIndex + 1,
+        );
       case 'pause':
         return { ...state, status: 'paused' };
       case 'resume':

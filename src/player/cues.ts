@@ -2,6 +2,7 @@ import type { WorkoutSession } from '../engine/generateWorkout';
 import type { Step } from './timeline';
 
 export const NEXT_UP_LEAD_SEC = 5;
+const VOICE_STEP_END_BUFFER_SEC = 10;
 
 export interface Cue {
   text: string;
@@ -26,6 +27,7 @@ export function openingCue(session: WorkoutSession, timeline: readonly Step[], s
     case 'form-check':
       return `Form check: ${exercise.name}. ${exercise.formCue}`;
     case 'work':
+      if (exercise.voiceSteps && item.round > 1) return `${exercise.name}. ${exercise.voiceIntro}`;
       return item.round === 1
         ? `${exercise.name}. ${exercise.voiceIntro}`
         : `Round ${item.round}. ${exercise.name}. Begin.`;
@@ -65,8 +67,27 @@ export function inStepCue(
     const next = nextWorkItem(timeline, stepIndex);
     if (next !== null) return { text: `Next up: ${session.items[next].exercise.name}.`, droppable: false };
   }
+  const guidedText = voiceStepCue(session, timeline, stepIndex, remainingSec);
+  if (guidedText !== null) return { text: guidedText, droppable: false };
   const text = periodicCue(session, timeline, stepIndex, remainingSec);
   return text === null ? null : { text, droppable: true };
+}
+
+function voiceStepCue(
+  session: WorkoutSession,
+  timeline: readonly Step[],
+  stepIndex: number,
+  remainingSec: number,
+): string | null {
+  const step = timeline[stepIndex];
+  if (step.kind !== 'work') return null;
+  const voiceSteps = session.items[step.itemIndex].exercise.voiceSteps;
+  if (!voiceSteps) return null;
+  const elapsed = step.durationSec - remainingSec;
+  const cueIndex = voiceSteps.findIndex((_, index) =>
+    Math.round(((index + 1) * (step.durationSec - VOICE_STEP_END_BUFFER_SEC)) / voiceSteps.length) === elapsed,
+  );
+  return cueIndex < 0 ? null : voiceSteps[cueIndex];
 }
 
 function isNextUpSecond(timeline: readonly Step[], stepIndex: number, remainingSec: number): boolean {
@@ -87,7 +108,8 @@ function periodicCue(
   if (step.kind !== 'work') return null;
   if (remainingSec <= 3) return String(remainingSec);
 
-  const { tempo } = session.items[step.itemIndex].exercise;
+  const { tempo, voiceSteps } = session.items[step.itemIndex].exercise;
+  if (voiceSteps) return null;
   if (tempo === 'breath') return elapsed % 4 === 0 ? BOX_BREATH[(elapsed / 4) % 4] : null;
   if (tempo === 'isometric' || tempo === 'hold') return elapsed % 10 === 0 ? 'Hold. Keep breathing.' : null;
   if (tempo === 'flow' || tempo === 'fast') {
