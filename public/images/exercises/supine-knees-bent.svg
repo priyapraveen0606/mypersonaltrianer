@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-labelledby="t">
+  <title id="t">supine knees bent (placeholder illustration)</title>
+  <path d="M6 106 H114" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+  <g fill="none" stroke="#7dd3fc" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="16" cy="96" r="8"/>
+    <path d="M26 98 L58 102"/>
+    <path d="M26 98 L40 104 L52 104"/>
+    <path d="M26 98 L40 104 L52 104"/>
+    <path d="M58 102 L74 80 L88 104"/>
+    <path d="M58 102 L76 80 L90 104"/>
+  </g>
+</svg>

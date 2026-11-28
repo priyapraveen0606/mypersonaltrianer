@@ -14,4 +14,5 @@ export const FOCUS_LABELS: Record<PrimaryFocus, string> = {
   'upper-body-back': 'upper body & back',
   cardio: 'cardio',
   recovery: 'recovery',
+  warmup: 'warm-up',
 };

@@ -16,6 +16,18 @@ const isNonEmptyString = (v: unknown): v is string => typeof v === 'string' && v
 const isSubsetOf = <T extends string>(allowed: readonly T[], v: unknown): v is T[] =>
   Array.isArray(v) && v.length > 0 && v.every((x) => (allowed as readonly unknown[]).includes(x));
 
+/** Image keys are file names under public/images/exercises/, so only safe slug characters. */
+export const isImageKey = (v: unknown): v is string => typeof v === 'string' && /^[a-z0-9]+(-[a-z0-9]+)*$/.test(v);
+
+export const exerciseImageUrl = (imageKey: string): string =>
+  `${import.meta.env.BASE_URL}images/exercises/${imageKey}.svg`;
+
+const isVoiceStep = (v: unknown): boolean =>
+  typeof v === 'object' &&
+  v !== null &&
+  isNonEmptyString((v as Record<string, unknown>).cue) &&
+  isImageKey((v as Record<string, unknown>).imageKey);
+
 const isIntInRange = (v: unknown, min: number, max: number): v is number =>
   Number.isInteger(v) && (v as number) >= min && (v as number) <= max;
 
@@ -37,10 +49,12 @@ export function validateExercise(entry: unknown): string[] {
   if (!isIntInRange(e.defaultRestSec, 0, 120)) errors.push('defaultRestSec out of range');
   if (
     e.voiceSteps !== undefined &&
-    (!Array.isArray(e.voiceSteps) || e.voiceSteps.length === 0 || !e.voiceSteps.every(isNonEmptyString))
+    (!Array.isArray(e.voiceSteps) || e.voiceSteps.length === 0 || !e.voiceSteps.every(isVoiceStep))
   ) {
-    errors.push('voiceSteps must be a non-empty list of non-empty strings');
+    errors.push('voiceSteps must be a non-empty list of { cue, imageKey } steps');
   }
+  if (e.imageKey !== undefined && !isImageKey(e.imageKey)) errors.push('imageKey must be a lowercase slug');
+  if (e.unilateral !== undefined && typeof e.unilateral !== 'boolean') errors.push('unilateral must be boolean');
   if (e.videoUrl !== undefined && parseWhitelistedVideo(e.videoUrl) === null) {
     errors.push('videoUrl must be a YouTube watch/youtu.be URL');
   }

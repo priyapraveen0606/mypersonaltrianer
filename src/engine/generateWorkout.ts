@@ -12,8 +12,12 @@ const MEMORY_EXEMPT_MOODS: readonly Mood[] = ['moody', 'meditative'];
 /** Moods whose sessions are performed as consecutive rounds of the same flow. */
 const ROUNDS_MOODS: readonly Mood[] = ['moody'];
 
+export type Side = 'right' | 'left';
+
 export interface SessionItem {
   exercise: Exercise;
+  /** Set for unilateral moves: each is scheduled as a right set followed by a left set. */
+  side?: Side;
   /** 1-based count of this exercise within the session (Surya round 3, set 2, ...). */
   round: number;
   formCheckSec: number;
@@ -77,6 +81,41 @@ function buildUnits(pool: Exercise[], library: readonly Exercise[], rng: Rng): E
 }
 
 const baseCost = (e: Exercise) => e.defaultDurationSec + e.defaultRestSec;
+const isBookend = (e: Exercise) => e.primaryFocus === 'warmup' || e.primaryFocus === 'recovery';
+/** At most this share of the session goes to warm-up moves (always at least one, if available). */
+const WARMUP_SHARE = 0.1;
+
+/** Warm-up moves in library order, while they fit the warm-up share of the session. */
+function pickWarmup(warmups: readonly Exercise[], targetSec: number): Exercise[] {
+  const picked: Exercise[] = [];
+  let sec = 0;
+  for (const e of warmups) {
+    if (picked.length > 0 && sec + baseCost(e) > targetSec * WARMUP_SHARE) break;
+    picked.push(e);
+    sec += baseCost(e);
+  }
+  return picked;
+}
+
+/** Base (unscaled) work and rest of an item; scaling stretches from these. */
+interface ItemBase {
+  workSec: number;
+  restSec: number;
+}
+
+/** One item per move, or a right set then a left set (each half the work, rest after the left). */
+function toItems(exercise: Exercise, round: number, formCheckSec: number, restSec: number): [SessionItem, ItemBase][] {
+  if (!exercise.unilateral) {
+    const workSec = exercise.defaultDurationSec;
+    return [[{ exercise, round, formCheckSec, workSec, restSec }, { workSec, restSec }]];
+  }
+  const right = Math.ceil(exercise.defaultDurationSec / 2);
+  const left = exercise.defaultDurationSec - right;
+  return [
+    [{ exercise, side: 'right', round, formCheckSec, workSec: right, restSec: 0 }, { workSec: right, restSec: 0 }],
+    [{ exercise, side: 'left', round, formCheckSec: 0, workSec: left, restSec }, { workSec: left, restSec }],
+  ];
+}
 
 export function generateWorkout(options: GenerateOptions): WorkoutSession {
   const { mood, durationMin, recentFocus = null, library = EXERCISES, rng = Math.random } = options;
@@ -84,10 +123,15 @@ export function generateWorkout(options: GenerateOptions): WorkoutSession {
 
   const pool = eligibleExercises(library, mood, recentFocus);
   const cooldown = pool.filter((e) => e.primaryFocus === 'recovery');
-  const main = pool.filter((e) => e.primaryFocus !== 'recovery');
+  const main = pool.filter((e) => !isBookend(e));
   const units = buildUnits(main.length > 0 ? main : pool, library, rng);
   if (units.length === 0) throw new Error(`No safe exercises available for mood "${mood}"`);
 
+  const warmupExercises = main.length > 0 ? pickWarmup(pool.filter((e) => e.primaryFocus === 'warmup'), targetSec) : [];
+  const warmupCost = warmupExercises.reduce(
+    (sum, e) => sum + baseCost(e) + (e.requiresFormCheck ? FORM_CHECK_SEC : 0),
+    0,
+  );
   const cooldownExercise = main.length > 0 ? cooldown[0] : undefined;
   const cooldownCost = cooldownExercise
     ? cooldownExercise.defaultDurationSec + (cooldownExercise.requiresFormCheck ? FORM_CHECK_SEC : 0)
@@ -103,7 +147,7 @@ export function generateWorkout(options: GenerateOptions): WorkoutSession {
 
   // Fill the main block cyclically with whole units while they fit.
   let chosen: Exercise[] = [];
-  let used = cooldownCost;
+  let used = warmupCost + cooldownCost;
   const formChecks = new Map<number, number>();
   let i = 0;
   let misses = 0;
@@ -131,23 +175,20 @@ export function generateWorkout(options: GenerateOptions): WorkoutSession {
   }
 
   const rounds = new Map<string, number>();
-  const items: SessionItem[] = chosen.map((exercise, idx) => {
-    const round = (rounds.get(exercise.id) ?? 0) + 1;
-    rounds.set(exercise.id, round);
-    return {
-      exercise,
-      round,
-      formCheckSec: formChecks.get(idx) ?? 0,
-      workSec: exercise.defaultDurationSec,
-      restSec: exercise.defaultRestSec,
-    };
-  });
-  if (cooldownExercise) {
-    items.push({ exercise: cooldownExercise, round: 1, formCheckSec: formCheckFor(cooldownExercise), workSec: cooldownExercise.defaultDurationSec, restSec: 0 });
-  }
-  if (items.length > 0) items[items.length - 1].restSec = 0;
+  const planned: [SessionItem, ItemBase][] = [
+    ...warmupExercises.flatMap((e) => toItems(e, 1, e.requiresFormCheck ? FORM_CHECK_SEC : 0, e.defaultRestSec)),
+    ...chosen.flatMap((exercise, idx) => {
+      const round = (rounds.get(exercise.id) ?? 0) + 1;
+      rounds.set(exercise.id, round);
+      return toItems(exercise, round, formChecks.get(idx) ?? 0, exercise.defaultRestSec);
+    }),
+    ...(cooldownExercise ? toItems(cooldownExercise, 1, formCheckFor(cooldownExercise), 0) : []),
+  ];
+  const last = planned.at(-1);
+  if (last) last[0].restSec = last[1].restSec = 0;
+  const items = planned.map(([item]) => item);
 
-  scaleToTarget(items, targetSec);
+  scaleToTarget(planned, targetSec);
 
   const totalSec = sessionTotalSec(items);
   return { mood, durationMin, targetSec, totalSec, primaryFocus: dominantFocus(items), items };
@@ -158,16 +199,16 @@ export function sessionTotalSec(items: readonly SessionItem[]): number {
 }
 
 /** Spreads the leftover seconds over work (then rest) time, at most +50% per move. */
-function scaleToTarget(items: SessionItem[], targetSec: number): void {
-  let slack = targetSec - sessionTotalSec(items);
+function scaleToTarget(planned: [SessionItem, ItemBase][], targetSec: number): void {
+  let slack = targetSec - sessionTotalSec(planned.map(([it]) => it));
   for (const field of ['workSec', 'restSec'] as const) {
     let progress = true;
     while (slack > 0 && progress) {
       progress = false;
-      for (const it of items) {
+      for (const [it, bases] of planned) {
         if (slack <= 0) break;
-        const base = field === 'workSec' ? it.exercise.defaultDurationSec : it.exercise.defaultRestSec;
-        if (field === 'restSec' && (it === items[items.length - 1] || base === 0)) continue;
+        const base = bases[field];
+        if (field === 'restSec' && base === 0) continue;
         if (it[field] < Math.floor(base * (1 + MAX_STRETCH))) {
           it[field]++;
           slack--;
@@ -181,7 +222,7 @@ function scaleToTarget(items: SessionItem[], targetSec: number): void {
 export function dominantFocus(items: readonly SessionItem[]): PrimaryFocus {
   const totals = new Map<PrimaryFocus, number>();
   for (const it of items) {
-    if (it.exercise.primaryFocus === 'recovery') continue;
+    if (isBookend(it.exercise)) continue;
     totals.set(it.exercise.primaryFocus, (totals.get(it.exercise.primaryFocus) ?? 0) + it.workSec);
   }
   let best: PrimaryFocus = items[0]?.exercise.primaryFocus ?? 'recovery';

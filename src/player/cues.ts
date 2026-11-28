@@ -1,4 +1,4 @@
-import type { WorkoutSession } from '../engine/generateWorkout';
+import type { SessionItem, WorkoutSession } from '../engine/generateWorkout';
 import type { Step } from './timeline';
 
 export const NEXT_UP_LEAD_SEC = 5;
@@ -18,6 +18,14 @@ function nextWorkItem(timeline: readonly Step[], stepIndex: number): number | nu
   return null;
 }
 
+const sideLabel = (item: SessionItem) => (item.side ? `, ${item.side} side` : '');
+
+function nextUpCue(session: WorkoutSession, current: number, next: number): string {
+  const item = session.items[next];
+  const switchingSides = item.side === 'left' && session.items[current].exercise.id === item.exercise.id;
+  return switchingSides ? 'Next up: switch to your left side.' : `Next up: ${item.exercise.name}${sideLabel(item)}.`;
+}
+
 /** Spoken when a step begins (and on Repeat). */
 export function openingCue(session: WorkoutSession, timeline: readonly Step[], stepIndex: number): string {
   const step = timeline[stepIndex];
@@ -27,10 +35,11 @@ export function openingCue(session: WorkoutSession, timeline: readonly Step[], s
     case 'form-check':
       return `Form check: ${exercise.name}. ${exercise.formCue}`;
     case 'work':
-      if (exercise.voiceSteps && item.round > 1) return `${exercise.name}. ${exercise.voiceIntro}`;
+      if (item.side === 'left') return `Left side. ${exercise.name}. Begin.`;
+      if (exercise.voiceSteps && item.round > 1) return `${exercise.name}${sideLabel(item)}. ${exercise.voiceIntro}`;
       return item.round === 1
-        ? `${exercise.name}. ${exercise.voiceIntro}`
-        : `Round ${item.round}. ${exercise.name}. Begin.`;
+        ? `${exercise.name}${sideLabel(item)}. ${exercise.voiceIntro}`
+        : `Round ${item.round}. ${exercise.name}${sideLabel(item)}. Begin.`;
     case 'rest':
       return `Rest for ${step.durationSec} seconds.`;
   }
@@ -65,13 +74,17 @@ export function inStepCue(
 ): Cue | null {
   if (isNextUpSecond(timeline, stepIndex, remainingSec)) {
     const next = nextWorkItem(timeline, stepIndex);
-    if (next !== null) return { text: `Next up: ${session.items[next].exercise.name}.`, droppable: false };
+    if (next !== null) return { text: nextUpCue(session, timeline[stepIndex].itemIndex, next), droppable: false };
   }
   const guidedText = voiceStepCue(session, timeline, stepIndex, remainingSec);
   if (guidedText !== null) return { text: guidedText, droppable: false };
   const text = periodicCue(session, timeline, stepIndex, remainingSec);
   return text === null ? null : { text, droppable: true };
 }
+
+/** Elapsed second at which guided step `index` is spoken, spread evenly through the work step. */
+const voiceStepAt = (index: number, durationSec: number, count: number) =>
+  Math.round(((index + 1) * (durationSec - VOICE_STEP_END_BUFFER_SEC)) / count);
 
 function voiceStepCue(
   session: WorkoutSession,
@@ -84,10 +97,30 @@ function voiceStepCue(
   const voiceSteps = session.items[step.itemIndex].exercise.voiceSteps;
   if (!voiceSteps) return null;
   const elapsed = step.durationSec - remainingSec;
-  const cueIndex = voiceSteps.findIndex((_, index) =>
-    Math.round(((index + 1) * (step.durationSec - VOICE_STEP_END_BUFFER_SEC)) / voiceSteps.length) === elapsed,
-  );
-  return cueIndex < 0 ? null : voiceSteps[cueIndex];
+  const cueIndex = voiceSteps.findIndex((_, index) => voiceStepAt(index, step.durationSec, voiceSteps.length) === elapsed);
+  return cueIndex < 0 ? null : voiceSteps[cueIndex].cue;
+}
+
+/**
+ * Image for what the player is showing right now: during a guided work step, the most recently
+ * announced pose (the move's own image before the first pose cue); otherwise the move's image.
+ */
+export function currentImageKey(
+  session: WorkoutSession,
+  timeline: readonly Step[],
+  stepIndex: number,
+  remainingSec: number,
+): string | undefined {
+  const step = timeline[stepIndex];
+  const { exercise } = session.items[step.itemIndex];
+  const voiceSteps = exercise.voiceSteps;
+  if (step.kind !== 'work' || !voiceSteps) return exercise.imageKey;
+  const elapsed = step.durationSec - remainingSec;
+  let announced = -1;
+  voiceSteps.forEach((_, index) => {
+    if (voiceStepAt(index, step.durationSec, voiceSteps.length) <= elapsed) announced = index;
+  });
+  return announced < 0 ? exercise.imageKey : voiceSteps[announced].imageKey;
 }
 
 function isNextUpSecond(timeline: readonly Step[], stepIndex: number, remainingSec: number): boolean {

@@ -64,6 +64,33 @@ describe('PlayerScreen video mode', () => {
   });
 });
 
+describe('PlayerScreen visuals', () => {
+  it('shows the bundled move image, then each announced Chandra pose image', () => {
+    render(<PlayerScreen session={session} onFinish={() => {}} onQuit={() => {}} />);
+    const chandra = byId('chandra-namaskar');
+    expect(screen.getByRole('img')).toHaveAttribute('src', `/images/exercises/${chandra.imageKey}.svg`);
+    tick(Math.round((40 - 10) / chandra.voiceSteps!.length));
+    expect(screen.getByRole('img')).toHaveAttribute('src', `/images/exercises/${chandra.voiceSteps![0].imageKey}.svg`);
+    tick(40);
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+  });
+
+  it('labels the side of a unilateral move', () => {
+    const birdDog = byId('bird-dog');
+    const sided: WorkoutSession = {
+      ...session,
+      items: [
+        { exercise: birdDog, side: 'right', round: 1, formCheckSec: 0, workSec: 20, restSec: 0 },
+        { exercise: birdDog, side: 'left', round: 1, formCheckSec: 0, workSec: 20, restSec: 0 },
+      ],
+    };
+    render(<PlayerScreen session={sided} onFinish={() => {}} onQuit={() => {}} />);
+    expect(screen.getByText('Right side')).toBeInTheDocument();
+    tick(20);
+    expect(screen.getByText('Left side')).toBeInTheDocument();
+  });
+});
+
 describe('PlayerScreen rest sound', () => {
   it('plays a chime when a rest timer finishes naturally', () => {
     render(<PlayerScreen session={session} onFinish={() => {}} onQuit={() => {}} />);

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-labelledby="t">
+  <title id="t">pyramid (placeholder illustration)</title>
+  <path d="M6 106 H114" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+  <g fill="none" stroke="#7dd3fc" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="84" cy="88" r="8"/>
+    <path d="M78 78 L56 62"/>
+    <path d="M78 78 L74 92 L72 104"/>
+    <path d="M78 78 L76 92 L76 104"/>
+    <path d="M56 62 L46 84 L38 105"/>
+    <path d="M56 62 L66 84 L74 105"/>
+  </g>
+</svg>
