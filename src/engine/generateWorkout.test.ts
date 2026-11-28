@@ -123,6 +123,53 @@ describe('workout generation', () => {
     expect(s.items.some((it) => it.exercise.equipment.includes('thigh-trainer'))).toBe(false);
   });
 
+  it('every session opens with a warm-up block and closes with a cool-down', () => {
+    for (const s of sessions) {
+      const focuses = s.items.map((it) => it.exercise.primaryFocus);
+      expect(focuses[0]).toBe('warmup');
+      expect(focuses.at(-1)).toBe('recovery');
+      const firstMain = focuses.findIndex((f) => f !== 'warmup');
+      expect(focuses.slice(firstMain, -1)).not.toContain('warmup');
+      expect(focuses.slice(firstMain, -1)).not.toContain('recovery');
+      expect(s.primaryFocus).not.toBe('warmup');
+    }
+  });
+
+  it('Fast / Bonkers always gets a warm-up and a fast cool-down stretch', () => {
+    for (const durationMin of DURATIONS_MIN) {
+      for (let seed = 0; seed < 5; seed++) {
+        const s = generateWorkout({ mood: 'fast', durationMin, rng: seededRng(seed) });
+        expect(s.items[0].exercise.id).toBe('gentle-march-warmup');
+        expect(s.items.at(-1)?.exercise.id).toBe('standing-cooldown-stretch');
+        expect(s.primaryFocus).toBe('cardio');
+      }
+    }
+  });
+
+  it('schedules unilateral moves as a right set then a left set, splitting the work', () => {
+    let checked = 0;
+    for (const s of sessions) {
+      s.items.forEach((it, idx) => {
+        if (!it.exercise.unilateral) {
+          expect(it.side).toBeUndefined();
+          return;
+        }
+        if (it.side === 'left') return;
+        checked++;
+        const left = s.items[idx + 1];
+        expect(it.side).toBe('right');
+        expect(left).toMatchObject({ exercise: it.exercise, side: 'left', round: it.round, formCheckSec: 0 });
+        expect(it.restSec).toBe(0);
+        const half = it.exercise.defaultDurationSec / 2;
+        for (const sideItem of [it, left]) {
+          expect(sideItem.workSec).toBeGreaterThanOrEqual(Math.floor(half));
+          expect(sideItem.workSec).toBeLessThanOrEqual(Math.ceil(half) * 1.5);
+        }
+      });
+    }
+    expect(checked).toBeGreaterThan(0);
+  });
+
   it('rejects unsafe entries even if passed in directly', () => {
     const unsafe: Exercise = { ...EXERCISES[0], id: 'side-clam', position: 'side-lying', moods: ['moody'] };
     for (let seed = 0; seed < 20; seed++) {

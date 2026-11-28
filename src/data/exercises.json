@@ -1,5 +1,56 @@
 [
   {
+    "id": "gentle-march-warmup",
+    "name": "Gentle March Warm-Up",
+    "moods": ["fast", "strong", "slow"],
+    "equipment": ["bodyweight"],
+    "primaryFocus": "warmup",
+    "targetMuscle": "full-body",
+    "position": "standing",
+    "itBandSafe": true,
+    "requiresFormCheck": false,
+    "formCue": "March softly in place, swinging your arms naturally; keep your knees low and your breathing easy.",
+    "defaultDurationSec": 30,
+    "defaultRestSec": 0,
+    "tempo": "flow",
+    "imageKey": "march",
+    "voiceIntro": "Let's warm up. March gently in place and let your arms swing. Easy pace, just waking the body up."
+  },
+  {
+    "id": "joint-rotations-warmup",
+    "name": "Ankle, Knee & Hip Circles",
+    "moods": ["fast", "strong", "slow", "moody", "meditative"],
+    "equipment": ["bodyweight"],
+    "primaryFocus": "warmup",
+    "targetMuscle": "joints",
+    "position": "standing",
+    "itBandSafe": true,
+    "requiresFormCheck": false,
+    "formCue": "Hold a wall or chair if needed; make slow, small circles with each joint and stay pain-free.",
+    "defaultDurationSec": 30,
+    "defaultRestSec": 0,
+    "tempo": "flow",
+    "imageKey": "joint-rotations",
+    "voiceIntro": "Joint rotations. Circle your ankles, then gently circle your knees and hips. Slow and smooth."
+  },
+  {
+    "id": "arm-circles-warmup",
+    "name": "Arm Circles",
+    "moods": ["fast", "strong", "slow"],
+    "equipment": ["bodyweight"],
+    "primaryFocus": "warmup",
+    "targetMuscle": "shoulders",
+    "position": "standing",
+    "itBandSafe": true,
+    "requiresFormCheck": false,
+    "formCue": "Arms out at shoulder height; start with small circles and let them grow, shoulders relaxed away from your ears.",
+    "defaultDurationSec": 30,
+    "defaultRestSec": 0,
+    "tempo": "flow",
+    "imageKey": "arm-circles",
+    "voiceIntro": "Arms out to the sides. Small circles forward, growing bigger, then reverse the direction."
+  },
+  {
     "id": "surya-namaskar",
     "name": "Surya Namaskar (Sun Salutation)",
     "moods": ["moody", "slow"],
@@ -13,7 +64,21 @@
     "defaultDurationSec": 70,
     "defaultRestSec": 10,
     "tempo": "flow",
-    "voiceIntro": "Stand at the top of your mat. Hands at heart center. Let's flow through Surya Namaskar at your own steady rhythm."
+    "imageKey": "mountain-prayer",
+    "voiceIntro": "Stand at the top of your mat. Hands at heart center. Let's flow through Surya Namaskar at your own steady rhythm.",
+    "voiceSteps": [
+      { "cue": "Inhale and sweep your arms up overhead, lengthening through your fingertips.", "imageKey": "raised-arms" },
+      { "cue": "Exhale and fold forward, knees soft, hands toward the floor.", "imageKey": "forward-fold" },
+      { "cue": "Inhale and step one leg back into a low lunge. Lift your chest.", "imageKey": "low-lunge" },
+      { "cue": "Hold your breath and step the other leg back into plank.", "imageKey": "plank" },
+      { "cue": "Exhale and lower your knees, chest and chin to the mat.", "imageKey": "knees-chest-chin" },
+      { "cue": "Inhale, slide forward and lift your chest into a gentle cobra.", "imageKey": "cobra" },
+      { "cue": "Exhale and lift your hips up and back into downward dog.", "imageKey": "downward-dog" },
+      { "cue": "Inhale and step the first foot forward between your hands into a low lunge.", "imageKey": "low-lunge" },
+      { "cue": "Exhale, bring the back foot forward and fold, knees soft.", "imageKey": "forward-fold" },
+      { "cue": "Inhale and rise up slowly, arms sweeping overhead.", "imageKey": "raised-arms" },
+      { "cue": "Exhale and bring your hands back to heart center.", "imageKey": "mountain-prayer" }
+    ]
   },
   {
     "id": "chandra-namaskar",
@@ -30,22 +95,23 @@
     "defaultDurationSec": 80,
     "defaultRestSec": 10,
     "tempo": "flow",
+    "imageKey": "raised-arms",
     "voiceIntro": "Standing start. Stand at the side of your mat. Inhale and reach both arms overhead.",
     "voiceSteps": [
-      "Exhale and bend to one side. Inhale to center; exhale to the other side, then inhale to center.",
-      "Exhale, step wide into Goddess Pose, bend your knees and sink your hips.",
-      "Inhale and straighten your arms and legs into Star Pose.",
-      "Exhale and reach into Triangle Pose.",
-      "Inhale and fold over your front leg into Pyramid Pose.",
-      "Exhale, lower into Low Lunge. Inhale and reach your arms overhead.",
-      "Exhale and open into Skandasana.",
-      "Inhale and shift across into Skandasana on the opposite leg.",
-      "Turn to face the other direction and rise into Low Lunge. Exhale and place your hands on the mat.",
-      "Inhale, lift and fold into Pyramid Pose.",
-      "Exhale and open into Triangle Pose.",
-      "Inhale and rise to standing, arms and legs straight.",
-      "Exhale and sink back into Goddess Pose.",
-      "Step your feet together, reach your arms overhead, then bring your hands to prayer at heart center."
+      { "cue": "Exhale and bend to one side. Inhale to center; exhale to the other side, then inhale to center.", "imageKey": "standing-side-bend" },
+      { "cue": "Exhale, step wide into Goddess Pose, bend your knees and sink your hips.", "imageKey": "goddess" },
+      { "cue": "Inhale and straighten your arms and legs into Star Pose.", "imageKey": "star" },
+      { "cue": "Exhale and reach into Triangle Pose.", "imageKey": "triangle" },
+      { "cue": "Inhale and fold over your front leg into Pyramid Pose.", "imageKey": "pyramid" },
+      { "cue": "Exhale, lower into Low Lunge. Inhale and reach your arms overhead.", "imageKey": "low-lunge" },
+      { "cue": "Exhale and open into Skandasana.", "imageKey": "skandasana" },
+      { "cue": "Inhale and shift across into Skandasana on the opposite leg.", "imageKey": "skandasana" },
+      { "cue": "Turn to face the other direction and rise into Low Lunge. Exhale and place your hands on the mat.", "imageKey": "low-lunge" },
+      { "cue": "Inhale, lift and fold into Pyramid Pose.", "imageKey": "pyramid" },
+      { "cue": "Exhale and open into Triangle Pose.", "imageKey": "triangle" },
+      { "cue": "Inhale and rise to standing, arms and legs straight.", "imageKey": "star" },
+      { "cue": "Exhale and sink back into Goddess Pose.", "imageKey": "goddess" },
+      { "cue": "Step your feet together, reach your arms overhead, then bring your hands to prayer at heart center.", "imageKey": "mountain-prayer" }
     ]
   },
   {
@@ -62,6 +128,7 @@
     "defaultDurationSec": 45,
     "defaultRestSec": 15,
     "tempo": "2-1-2",
+    "imageKey": "glute-bridge",
     "voiceIntro": "Lie on your back with the resistance band above your knees. Feet flat, hip-width apart. Drive through your heels and lift."
   },
   {
@@ -78,6 +145,7 @@
     "defaultDurationSec": 45,
     "defaultRestSec": 15,
     "tempo": "2-0-2",
+    "imageKey": "band-walk",
     "voiceIntro": "Place the band above your knees or ankles. Drop into a mini squat and take two controlled steps right, then two steps left."
   },
   {
@@ -89,12 +157,14 @@
     "targetMuscle": "glute-medius",
     "position": "standing",
     "itBandSafe": true,
+    "unilateral": true,
     "requiresFormCheck": true,
     "formCue": "Stand next to a wall, lift the inside leg slightly, and press the outside of that knee into the wall while keeping hips level.",
     "defaultDurationSec": 40,
     "defaultRestSec": 15,
     "tempo": "isometric",
-    "voiceIntro": "Stand sideways next to a wall. Lift your inner foot slightly and press your outer knee gently into the wall. Hold steady and breathe."
+    "imageKey": "wall-push",
+    "voiceIntro": "Stand with your working side next to a wall. Lift that foot slightly and press the outside of that knee gently into the wall. Hold steady and breathe."
   },
   {
     "id": "standing-banded-hip-abduction",
@@ -105,12 +175,14 @@
     "targetMuscle": "glute-medius",
     "position": "standing",
     "itBandSafe": true,
+    "unilateral": true,
     "requiresFormCheck": true,
     "formCue": "Hold a wall or chair for balance; keep your torso upright as you lift one leg slightly out to the side.",
     "defaultDurationSec": 45,
     "defaultRestSec": 15,
     "tempo": "2-1-2",
-    "voiceIntro": "Band around your ankles, one hand on a wall for support. Keep your chest tall and slowly press one leg out to the side."
+    "imageKey": "standing-hip-abduction",
+    "voiceIntro": "Band around your ankles, one hand on a wall for support. Keep your chest tall and slowly press your working leg out to the side."
   },
   {
     "id": "seated-thigh-trainer-squeeze",
@@ -126,6 +198,7 @@
     "defaultDurationSec": 45,
     "defaultRestSec": 15,
     "tempo": "2-2-2",
+    "imageKey": "seated-tall",
     "voiceIntro": "Sit tall on a chair or mat with your purple thigh trainer securely between your thighs. Exhale as you squeeze, hold, and slowly release."
   },
   {
@@ -142,6 +215,7 @@
     "defaultDurationSec": 45,
     "defaultRestSec": 15,
     "tempo": "2-1-2",
+    "imageKey": "glute-bridge",
     "voiceIntro": "Lie on your back with the thigh trainer between your knees. Squeeze gently as you press your hips up toward the ceiling."
   },
   {
@@ -158,6 +232,7 @@
     "defaultDurationSec": 45,
     "defaultRestSec": 20,
     "tempo": "3-1-2",
+    "imageKey": "squat",
     "voiceIntro": "Feet shoulder-width apart. We are going slow for maximum burn. Down for three, two, one... pause... and drive back up."
   },
   {
@@ -169,12 +244,14 @@
     "targetMuscle": "glute-maximus",
     "position": "standing",
     "itBandSafe": true,
+    "unilateral": true,
     "requiresFormCheck": false,
     "formCue": "Rest hands on a table or chair back; extend one leg straight behind you by squeezing the glute, not arching the back.",
     "defaultDurationSec": 45,
     "defaultRestSec": 15,
     "tempo": "2-1-2",
-    "voiceIntro": "Stand facing a wall or chair back with your hands supported. Keep your spine neutral and lift one leg straight back behind you."
+    "imageKey": "standing-hip-extension",
+    "voiceIntro": "Stand facing a wall or chair back with your hands supported. Keep your spine neutral and lift your working leg straight back behind you."
   },
   {
     "id": "dumbbell-bent-over-row",
@@ -190,6 +267,7 @@
     "defaultDurationSec": 45,
     "defaultRestSec": 15,
     "tempo": "2-1-2",
+    "imageKey": "bent-over-hinge",
     "voiceIntro": "Grab your 1 kg dumbbells. Hinge forward slightly with a flat back. Pull your elbows back and squeeze your shoulder blades."
   },
   {
@@ -206,6 +284,7 @@
     "defaultDurationSec": 45,
     "defaultRestSec": 15,
     "tempo": "2-1-2",
+    "imageKey": "bent-over-hinge",
     "voiceIntro": "With your 1 kg dumbbells, hinge forward slightly. Open your arms wide like wings, squeezing your upper back."
   },
   {
@@ -222,6 +301,7 @@
     "defaultDurationSec": 45,
     "defaultRestSec": 15,
     "tempo": "2-0-3",
+    "imageKey": "overhead-press",
     "voiceIntro": "Hold your dumbbells at shoulder height, palms forward. Press straight overhead, then lower down slowly for three seconds."
   },
   {
@@ -238,6 +318,7 @@
     "defaultDurationSec": 45,
     "defaultRestSec": 15,
     "tempo": "2-1-2",
+    "imageKey": "standing-curl",
     "voiceIntro": "Dumbbells at your sides. Curl up smoothly, lower down, then press back slightly to wake up the backs of your arms."
   },
   {
@@ -254,6 +335,7 @@
     "defaultDurationSec": 45,
     "defaultRestSec": 15,
     "tempo": "3-2-3",
+    "imageKey": "cobra",
     "voiceIntro": "Lie on your stomach, hands under your shoulders. Inhale and gently lift your chest using your back strength. Hold, then lower."
   },
   {
@@ -265,12 +347,14 @@
     "targetMuscle": "core-back",
     "position": "quadruped",
     "itBandSafe": true,
+    "unilateral": true,
     "requiresFormCheck": false,
     "formCue": "Extend opposite arm and leg without letting your hips tilt; keep your gaze down at the mat.",
     "defaultDurationSec": 45,
     "defaultRestSec": 15,
     "tempo": "2-2-2",
-    "voiceIntro": "Come onto hands and knees. Extend your right arm forward and left leg back. Hold steady, then switch sides."
+    "imageKey": "bird-dog",
+    "voiceIntro": "Come onto hands and knees. Extend your working-side arm forward and the opposite leg back. Hold steady and breathe."
   },
   {
     "id": "brisk-march-in-place",
@@ -286,6 +370,7 @@
     "defaultDurationSec": 60,
     "defaultRestSec": 15,
     "tempo": "fast",
+    "imageKey": "march",
     "voiceIntro": "Let's pick up the energy! March briskly in place, swinging your arms strong and steady."
   },
   {
@@ -302,6 +387,7 @@
     "defaultDurationSec": 60,
     "defaultRestSec": 15,
     "tempo": "fast",
+    "imageKey": "side-step",
     "voiceIntro": "Step right, tap, step left, tap! Add strong arm pulls every time you step to get your heart rate up."
   },
   {
@@ -318,6 +404,7 @@
     "defaultDurationSec": 45,
     "defaultRestSec": 15,
     "tempo": "fast",
+    "imageKey": "march",
     "voiceIntro": "Alternate lifting your knees high in front of you, reaching your arms up and pulling down with every lift!"
   },
   {
@@ -334,6 +421,7 @@
     "defaultDurationSec": 45,
     "defaultRestSec": 15,
     "tempo": "fast",
+    "imageKey": "punch",
     "voiceIntro": "Wide stance, knees soft, fists up! Punch forward fast—left, right, left, right. Let out all that energy!"
   },
   {
@@ -350,6 +438,7 @@
     "defaultDurationSec": 60,
     "defaultRestSec": 10,
     "tempo": "flow",
+    "imageKey": "tabletop",
     "voiceIntro": "Come onto hands and knees. Inhale to arch your back gently, exhale to round your spine toward the ceiling."
   },
   {
@@ -361,12 +450,14 @@
     "targetMuscle": "glutes-hips",
     "position": "supine",
     "itBandSafe": true,
+    "unilateral": true,
     "requiresFormCheck": false,
     "formCue": "Lie on your back, cross one ankle over the opposite thigh, and gently draw the bottom leg in until you feel a comfortable release.",
     "defaultDurationSec": 60,
     "defaultRestSec": 10,
     "tempo": "hold",
-    "voiceIntro": "Lie on your back. Cross your right ankle over your left thigh and gently pull your left knee toward your chest. Breathe deeply."
+    "imageKey": "figure-four",
+    "voiceIntro": "Lie on your back. Cross your working-side ankle over the opposite thigh and gently pull the bottom knee toward your chest. Breathe deeply."
   },
   {
     "id": "supine-knee-rocking",
@@ -382,12 +473,30 @@
     "defaultDurationSec": 60,
     "defaultRestSec": 10,
     "tempo": "flow",
+    "imageKey": "supine-knees-bent",
     "voiceIntro": "Stay on your back with knees bent. Slowly let both knees rock to the right, back to center, and over to the left."
+  },
+  {
+    "id": "standing-cooldown-stretch",
+    "name": "Standing Chest Opener & Side Reach",
+    "moods": ["fast", "strong"],
+    "equipment": ["bodyweight"],
+    "primaryFocus": "recovery",
+    "targetMuscle": "chest-sides",
+    "position": "standing",
+    "itBandSafe": true,
+    "requiresFormCheck": false,
+    "formCue": "Interlace your hands behind you to open your chest, then reach each arm overhead into a gentle side bend; no bouncing.",
+    "defaultDurationSec": 60,
+    "defaultRestSec": 0,
+    "tempo": "hold",
+    "imageKey": "standing-side-bend",
+    "voiceIntro": "Cool down. Clasp your hands behind you and open your chest. Then reach up and lean gently into a side stretch. Slow your breath."
   },
   {
     "id": "box-breathing-cooldown",
     "name": "Seated 4-4-4-4 Afterglow Breathing",
-    "moods": ["meditative", "moody"],
+    "moods": ["meditative", "moody", "slow"],
     "equipment": ["bodyweight"],
     "primaryFocus": "recovery",
     "targetMuscle": "nervous-system",
@@ -398,6 +507,7 @@
     "defaultDurationSec": 60,
     "defaultRestSec": 0,
     "tempo": "breath",
+    "imageKey": "seated-tall",
     "voiceIntro": "Sit comfortably and close your eyes. Inhale for four... hold for four... exhale slowly for four... and soak in that afterglow."
   }
 ]

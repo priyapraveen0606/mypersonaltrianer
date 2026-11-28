@@ -13,6 +13,7 @@ export const PRIMARY_FOCUSES = [
   'upper-body-back',
   'cardio',
   'recovery',
+  'warmup',
 ] as const;
 export type PrimaryFocus = (typeof PRIMARY_FOCUSES)[number];
 
@@ -26,6 +27,12 @@ export const POSITIONS = [
   'side-lying',
 ] as const;
 export type Position = (typeof POSITIONS)[number];
+
+/** A pose-by-pose cue, spoken in order through the work step, with the pose's illustration. */
+export interface VoiceStep {
+  cue: string;
+  imageKey: string;
+}
 
 export interface Exercise {
   id: string;
@@ -42,8 +49,12 @@ export interface Exercise {
   defaultRestSec: number;
   tempo: string;
   voiceIntro: string;
-  voiceSteps?: string[];
+  voiceSteps?: VoiceStep[];
   videoUrl?: string;
+  /** Bundled illustration at public/images/exercises/<imageKey>.svg. */
+  imageKey?: string;
+  /** Performed one side at a time: the engine schedules a right then a left set. */
+  unilateral?: boolean;
 }
 
 export const RATINGS = ['easy', 'just-right', 'too-hard'] as const;

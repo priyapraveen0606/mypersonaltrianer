@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-labelledby="t">
+  <title id="t">band walk (placeholder illustration)</title>
+  <path d="M6 106 H114" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+  <g fill="none" stroke="#7dd3fc" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="60" cy="36" r="8"/>
+    <path d="M60 46 L60 72"/>
+    <path d="M60 46 L48 58 L54 70"/>
+    <path d="M60 46 L72 58 L66 70"/>
+    <path d="M60 72 L46 86 L42 105"/>
+    <path d="M60 72 L74 86 L78 105"/>
+    <path d="M48 84 L72 84" stroke="#fbbf24" stroke-width="3"/>
+  </g>
+</svg>

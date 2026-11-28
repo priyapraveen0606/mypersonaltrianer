@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-labelledby="t">
+  <title id="t">overhead press (placeholder illustration)</title>
+  <path d="M6 106 H114" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+  <g fill="none" stroke="#7dd3fc" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="60" cy="30" r="8"/>
+    <path d="M60 40 L60 68"/>
+    <path d="M60 40 L46 34 L48 16"/>
+    <path d="M60 40 L74 34 L72 16"/>
+    <path d="M60 68 L56 86 L54 105"/>
+    <path d="M60 68 L64 86 L66 105"/>
+    <rect x="42" y="12" width="12" height="5" rx="2" fill="#fbbf24" stroke="none"/>
+    <rect x="66" y="12" width="12" height="5" rx="2" fill="#fbbf24" stroke="none"/>
+  </g>
+</svg>

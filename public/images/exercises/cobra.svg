@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-labelledby="t">
+  <title id="t">cobra (placeholder illustration)</title>
+  <path d="M6 106 H114" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+  <g fill="none" stroke="#7dd3fc" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="90" cy="70" r="8"/>
+    <path d="M82 80 L56 102"/>
+    <path d="M82 80 L80 94 L84 104"/>
+    <path d="M82 80 L82 94 L86 104"/>
+    <path d="M56 102 L38 104 L18 104"/>
+    <path d="M56 102 L38 104 L18 104"/>
+  </g>
+</svg>

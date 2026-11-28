@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import type { WorkoutSession } from '../engine/generateWorkout';
+import type { SessionItem, WorkoutSession } from '../engine/generateWorkout';
+import { exerciseImageUrl } from '../domain/exercises';
 import { parseWhitelistedVideo } from '../domain/video';
 import { useWakeLock } from '../hooks/useWakeLock';
-import { inStepCue, openingCue } from '../player/cues';
+import { currentImageKey, inStepCue, openingCue } from '../player/cues';
 import { initialPlayerState, playerReducer } from '../player/reducer';
 import { buildTimeline } from '../player/timeline';
 import { isSpeechSupported, speak, stopSpeaking } from '../voice/speech';
@@ -22,6 +23,10 @@ const control = `${controlBase} bg-slate-800 text-slate-50 active:bg-slate-700`;
 const primary = `${controlBase} bg-emerald-400 text-slate-900 active:bg-emerald-300`;
 const selected = `${controlBase} bg-amber-400 text-slate-900`;
 
+const SIDE_TEXT = { right: 'Right side', left: 'Left side' } as const;
+const nextLabel = (item: SessionItem | undefined) =>
+  item ? `${item.exercise.name}${item.side ? ` (${item.side} side)` : ''}` : '';
+
 const fmt = (sec: number) => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
 
 export function PlayerScreen({ session, onFinish, onQuit }: Props) {
@@ -40,6 +45,10 @@ export function PlayerScreen({ session, onFinish, onQuit }: Props) {
   const videoMode = videoStep === state.stepIndex && video !== null && step?.kind === 'work';
   const setVideoMode = (on: boolean) => setVideoStep(on ? state.stepIndex : null);
   const ticking = state.status === 'playing' && !videoMode;
+  const imageKey =
+    step && (step.kind === 'work' || step.kind === 'form-check') && !videoMode
+      ? currentImageKey(session, timeline, state.stepIndex, state.remainingSec)
+      : undefined;
 
   useEffect(() => {
     const update = () => setOnline(navigator.onLine);
@@ -111,7 +120,17 @@ export function PlayerScreen({ session, onFinish, onQuit }: Props) {
         <p className="text-xl font-semibold uppercase tracking-wide text-sky-300">
           {step.kind === 'form-check' ? 'Form check' : step.kind === 'rest' ? 'Rest' : item.round > 1 ? `Round ${item.round}` : 'Now'}
         </p>
+        {imageKey && (
+          <img
+            src={exerciseImageUrl(imageKey)}
+            alt={`${imageKey.replace(/-/g, ' ')} illustration`}
+            width={160}
+            height={160}
+            className="h-40 w-40 rounded-2xl bg-slate-800"
+          />
+        )}
         <h1 className="text-4xl font-extrabold">{item.exercise.name}</h1>
+        {item.side && <p className="text-2xl font-bold text-amber-300">{SIDE_TEXT[item.side]}</p>}
 
         {step.kind === 'form-check' && (
           <div className="w-full rounded-2xl bg-slate-800 p-5 text-2xl leading-snug">
@@ -123,7 +142,7 @@ export function PlayerScreen({ session, onFinish, onQuit }: Props) {
         )}
 
         {step.kind === 'rest' && timeline[state.stepIndex + 1] && (
-          <p className="text-2xl text-slate-300">Next: {session.items[step.itemIndex + 1]?.exercise.name}</p>
+          <p className="text-2xl text-slate-300">Next: {nextLabel(session.items[step.itemIndex + 1])}</p>
         )}
 
         {videoMode && video ? (

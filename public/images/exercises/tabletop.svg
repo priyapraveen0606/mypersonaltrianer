@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-labelledby="t">
+  <title id="t">tabletop (placeholder illustration)</title>
+  <path d="M6 106 H114" stroke="#334155" stroke-width="2" stroke-linecap="round"/>
+  <g fill="none" stroke="#7dd3fc" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="90" cy="66" r="8"/>
+    <path d="M80 72 L44 72"/>
+    <path d="M80 72 L80 88 L80 104"/>
+    <path d="M80 72 L82 88 L82 104"/>
+    <path d="M44 72 L44 104 L26 104"/>
+    <path d="M44 72 L46 104 L28 104"/>
+  </g>
+</svg>
